@@ -204,7 +204,9 @@ Row {
                 defaultFontSize = font.pointSize;
                 defaultColor = color + ''; //append '' to avoid binding to color property, we want just to intialize it.
                 update();
-                rotationTimer.running = true
+                if(plasmoid.configuration.rotation > 0){
+                    rotationTimer.running = true;
+                }
             }
 
             function update() {
@@ -249,14 +251,25 @@ Row {
             }
             
             onExited: {
-                rotationTimer.running = true;
+                if(plasmoid.configuration.rotation > 0){
+                    rotationTimer.running = true;
+                }
             }
 
             onWheel: {
+                var item = getCurrentItem();
                 if (wheel.angleDelta.y < 0) {
-                    rotateNext();
+                    if (item.wheelDown !== undefined) {
+                        root.doItemWheelDown(item);
+                    } else {
+                        rotateNext();
+                    }
                 } else if (wheel.angleDelta.y > 0) {
-                    rotatePrev();
+                    if (item.wheelUp !== undefined) {
+                        root.doItemWheelUp(item);
+                    } else {
+                        rotatePrev();
+                    }
                 }
             }
         }

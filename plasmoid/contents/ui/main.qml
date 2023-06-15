@@ -150,25 +150,37 @@ Item {
     }
     
     function doItemClick(item) {
-        
+
         if (item !== null && item.href !== undefined && item.onclick === 'href') {
             executable.exec('xdg-open '+item.href);
         }
 
         if (item !== null && item.bash !== undefined && item.onclick === 'bash') {
-            if (item.terminal !== undefined && item.terminal === 'true') {
-                executable.exec('konsole --noclose -e '+item.bash, function() {
-                  doRefreshIfNeeded(item);
-                });
-            } else {
-                executable.exec(item.bash, function() {
-                  doRefreshIfNeeded(item);
-                });
-            }
-        } else {
-          doRefreshIfNeeded(item);
+            doExecute(item,item.bash)
+        }else{
+            doRefreshIfNeeded(item);
         }
     }
+    
+    function doItemWheelDown(item) {
+        doExecute(item,item.wheelDown)
+    }
+
+     function doItemWheelUp(item) {
+        doExecute(item,item.wheelUp)
+    }
+
+    function doExecute(item,bash) {
+        if (item.terminal !== undefined && item.terminal === 'true') {
+            executable.exec('konsole --noclose -e '+bash, function() {
+                doRefreshIfNeeded(item);
+                });
+        } else {
+            executable.exec(bash, function() {
+                doRefreshIfNeeded(item);
+                });    
+        }
+    } 
     
     function isClickable(item) {
         return item !==null && (item.refresh == 'true' || item.onclick == 'href' || item.onclick == 'bash');
@@ -247,6 +259,10 @@ Item {
             if (stdout.indexOf('---') === -1) {
                 plasmoid.expanded = false
             }
+            
+            //if (config.waitForCompletion) {
+                timer.restart()
+			//}
         }
     }
 
@@ -269,7 +285,8 @@ Item {
         id: timer
         interval: plasmoid.configuration.interval * 1000
         running: false
-        repeat: true
+        repeat: false
+        //repeat: !config.waitForCompletion
         onTriggered: update()
     }    
 }
