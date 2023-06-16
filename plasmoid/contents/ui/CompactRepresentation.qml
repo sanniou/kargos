@@ -65,9 +65,11 @@ Item {
         function doDropdown() {
             if (!plasmoid.expanded) {
                 plasmoid.expanded = true;
+                root.kargosMenuOpen=true;
                 mouseExitDelayer.stop();
             } else if (plasmoid.expanded) {
                 plasmoid.expanded = false;
+                root.kargosMenuOpen=false;
             }
         }
 

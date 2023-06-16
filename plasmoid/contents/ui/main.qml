@@ -38,6 +38,8 @@ Item {
     Plasmoid.fullRepresentation: FullRepresentation {}
     
     property int interval;    
+    property bool kargosMenuOpen: isConstrained() ? false : true;
+    property string kargosVersion: "0.6.0";
     property int dropdownItemsCount: -1;
     
     function isConstrained() {
@@ -198,7 +200,7 @@ Item {
         }
         
         function exec(cmd) {
-                connectSource(cmd)
+                connectSource(`export KARGOS_MENU_OPEN=${kargosMenuOpen}; export KARGOS_VERSION=${kargosVersion}; ${cmd}`)
         }
         signal exited(string sourceName, string stdout)
 
@@ -226,8 +228,7 @@ Item {
             if (onNewDataCallback !== undefined){
                 callbacks[cmd] = onNewDataCallback
             }
-            connectSource(cmd)
-                    
+            connectSource(`export KARGOS_MENU_OPEN=${kargosMenuOpen}; export KARGOS_VERSION=${kargosVersion}; ${cmd}`)
         }
         signal exited(string sourceName, string stdout)
 
