@@ -26,6 +26,8 @@ custom plasmoids.
 - "onclick" attribute (**non BitBar, kargos only**). Possible values: `bash` or `href`. What to execute if you click on the line, that is,
   to run the command indicated in the `bash` attribute or go to the web indicated by the `href` attribute. The corresponding "Go" or "Run"
   button will not appear.
+- "wheelUp"
+- "wheelDown"
 - HTML support. Only the subset [supported by QML](http://doc.qt.io/qt-5/richtext-html-subset.html).
 - Interval detection on the command filename. A custom interval option is available.
 

@@ -190,6 +190,11 @@ Item {
         return item !==null && (item.refresh == 'true' || item.onclick == 'href' || item.onclick == 'bash');
     }
     
+    // https://github.com/KDE/plasma-workspace/blob/master/dataengines/executable/executable.h
+	// https://github.com/KDE/plasma-workspace/blob/master/dataengines/executable/executable.cpp
+	// https://github.com/KDE/plasma-framework/blob/master/src/declarativeimports/core/datasource.h
+	// https://github.com/KDE/plasma-framework/blob/master/src/declarativeimports/core/datasource.cpp
+	// https://github.com/KDE/plasma-framework/blob/master/src/plasma/scripting/dataenginescript.cpp
     // DataSource for the user command execution results
     PlasmaCore.DataSource {
         id: commandResultsDS
