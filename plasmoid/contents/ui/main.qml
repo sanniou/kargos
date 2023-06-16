@@ -93,10 +93,12 @@ Item {
     function parseLine(line, currentCategory) {
         var parsedObject = {title: line};
         
-        if (line.indexOf('|') != -1) {
-            parsedObject.title = line.split('|')[0].replace(/\s+$/, '');
+        var firstCommaIndex = line.indexOf('|');
+        if (firstCommaIndex != -1) {
+            // split only the first comma
+            parsedObject.title = line.substr(0, firstCommaIndex).replace(/\s+$/, '');
             
-            var attributesToken = line.split('|')[1].trim();
+            var attributesToken = line.substr(firstCommaIndex + 1).trim();
             
             // replace \' to string __ESCAPED_QUOTE__
             attributesToken = attributesToken.replace(/\\'/g, '__ESCAPED_QUOTE__');
