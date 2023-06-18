@@ -30,7 +30,7 @@ Row {
     spacing: 2
     anchors.left: parent.left
     anchors.right: parent.right
-    
+
     height: label.implicitHeight + 20
     property bool buttonHidingDelay: false
     

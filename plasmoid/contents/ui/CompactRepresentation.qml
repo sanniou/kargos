@@ -30,7 +30,13 @@ Item {
 
     id: compactRoot
 
-    Layout.preferredWidth: rotator.implicitWidth + (dropdownButton.visible?dropdownButton.implicitWidth + 5 : 0)
+    Layout.preferredWidth: itemWidth 
+    Layout.minimumWidth: itemWidth
+
+    readonly property int itemWidth: {
+        // min is 1
+		return Math.ceil(Math.max(rotator.implicitWidth, 1) + (dropdownButton.visible?dropdownButton.implicitWidth + 5 : 0))		
+	}
 
     property var mouseIsInside: false;
 
