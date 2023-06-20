@@ -30,12 +30,16 @@ Item {
 
     id: compactRoot
 
+    //https://github.com/psifidotos/Latte-Dock/blob/891d6e4dfa59758f09dd4a61fb1ffcc888fd03f0/containment/package/contents/ui/main.qml#L747
+    property bool isPanelEditMode: (!plasmoid.immutable && plasmoid.userConfiguring)
+    property int minCompactLength: isPanelEditMode ? 0 : 1 // 0 means default
+
     Layout.preferredWidth: itemWidth 
     Layout.minimumWidth: itemWidth
 
     readonly property int itemWidth: {
         // min is 1
-		return Math.ceil(Math.max(rotator.implicitWidth, 1) + (dropdownButton.visible?dropdownButton.implicitWidth + 5 : 0))		
+		return Math.ceil(Math.max(rotator.implicitWidth, minCompactLength) + (dropdownButton.visible?dropdownButton.implicitWidth + 5 : 0))		
 	}
 
     property var mouseIsInside: false;
