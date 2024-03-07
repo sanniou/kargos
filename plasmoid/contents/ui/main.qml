@@ -39,7 +39,7 @@ PlasmoidItem {
     
     property int interval;    
     property bool kargosMenuOpen: isConstrained() ? false : true;
-    property string kargosVersion: "0.6.0";
+    property string kargosVersion: "0.7.0";
     property int dropdownItemsCount: -1;
     
     function isConstrained() {
