@@ -18,11 +18,12 @@
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  */
-import QtQuick 2.0
-import org.kde.plasma.components 2.0 as PlasmaComponents
-import QtQuick.Controls 1.4
-import QtQuick.Layouts 1.1
-import org.kde.plasma.core 2.0 as PlasmaCore
+import QtQuick 2.15
+import org.kde.plasma.components as PlasmaComponents
+import QtQuick.Controls
+import QtQuick.Layouts
+import org.kde.plasma.core as PlasmaCore
+import org.kde.kirigami as Kirigami
 
 Item {
     id: fullRoot
@@ -69,7 +70,7 @@ Item {
             visible: (typeof category === 'undefined') ? true : (fullRoot.categories[category].visible)
             spacing: 2
             
-            PlasmaCore.IconItem {
+            Kirigami.Icon {
                 id: icon
                 source: (typeof iconName !== 'undefined')? iconName: ''
                 anchors.verticalCenter: row.verticalCenter
@@ -156,7 +157,7 @@ Item {
             }
 
             // expand-collapse icon
-            PlasmaCore.IconItem {
+            Kirigami.Icon {
                 id: arrow_icon
                 source: (fullRoot.categories[model.title] !== undefined && fullRoot.categories[model.title].visible) ? 'arrow-down': 'arrow-up'
                 visible: (typeof model.category === 'undefined' && fullRoot.categories[model.title] !== undefined && fullRoot.categories[model.title].items.length > 0) ? true:false

@@ -18,11 +18,11 @@
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  */
-import QtQuick 2.0
-import org.kde.plasma.components 2.0 as PlasmaComponents
-import QtQuick.Controls 1.4
-import QtQuick.Layouts 1.1
-import org.kde.plasma.core 2.0 as PlasmaCore
+import QtQuick 2.15
+import org.kde.plasma.components as PlasmaComponents
+import QtQuick.Controls
+import QtQuick.Layouts
+import org.kde.plasma.core as PlasmaCore
 
 
 MouseArea {
@@ -131,7 +131,7 @@ MouseArea {
         anchors.rightMargin: goButton.visible? (mousearea.iconMode ? 0 : 2): 0
         anchors.verticalCenter: parent.verticalCenter
 
-        visible: item!==null && (buttonsAlwaysVisible  || !buttonsShouldHide) && (typeof item.bash !== 'undefined') && (typeof item.onclick === 'undefined' || item.onclick !== 'bash')
+        visible: item !== null && (buttonsAlwaysVisible || !buttonsShouldHide) && (typeof item.bash !== 'undefined') && (typeof item.onclick === 'undefined' || item.onclick !== 'bash')
 
         onClicked: {
             if (item !== null && item.bash !== undefined) {

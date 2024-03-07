@@ -18,11 +18,12 @@
  * License along with this program.  If not, see
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  */
-import QtQuick 2.0
-import org.kde.plasma.components 2.0 as PlasmaComponents
-import QtQuick.Controls 1.4
-import QtQuick.Layouts 1.1
-import org.kde.plasma.core 2.0 as PlasmaCore
+import QtQuick 2.15
+import org.kde.plasma.components as PlasmaComponents
+import QtQuick.Controls
+import QtQuick.Layouts
+import org.kde.plasma.core as PlasmaCore
+import org.kde.kirigami as Kirigami
 
 Item {
         id: control
@@ -40,18 +41,16 @@ Item {
         implicitWidth: iconMode ? controlInnerIcon.implicitWidth: controlInnerButton.implicitWidth
         implicitHeight: iconMode ? controlInnerIcon.implicitHeight: controlInnerButton.implicitHeight
         
-
         Button {
             id: controlInnerButton
             visible: !control.iconMode
-            tooltip: control.text
-            iconName: control.iconName
+            ToolTip.text: control.text
+            icon.name: control.iconName
             anchors.fill: parent
-            
             onClicked: control.clicked()
         }
         
-        PlasmaCore.IconItem {
+        Kirigami.Icon {
             id: controlInnerIcon
             visible: control.iconMode
             source: control.iconName

@@ -1,4 +1,4 @@
-/*
+    /*
  * 
  * kargos
  * 
@@ -19,14 +19,15 @@
  * <http://www.gnu.org/licenses/gpl-3.0.html>.
  */
 
-import QtQuick 2.0
-import org.kde.plasma.components 2.0 as PlasmaComponents
-import QtQuick.Controls 1.4
-import QtQuick.Layouts 1.1
-import org.kde.plasma.core 2.0 as PlasmaCore
+import QtQuick 2.15
+import org.kde.plasma.components as PlasmaComponents
+import QtQuick.Controls
+import QtQuick.Layouts
+import org.kde.plasma.plasmoid
+import org.kde.plasma.core as PlasmaCore
+import org.kde.ksvg as KSvg
 
-
-Item {
+PlasmoidItem {
 
     id: compactRoot
 
@@ -116,12 +117,12 @@ Item {
 
                 readonly property int arrowAnimationDuration: units.shortDuration * 3
 
-                PlasmaCore.Svg {
+                KSvg.Svg {
                     id: arrowSvg
                     imagePath: "widgets/arrows"
                 }
 
-                PlasmaCore.SvgItem {
+                KSvg.SvgItem {
                     id: arrow
 
                     anchors.centerIn: parent
@@ -155,7 +156,7 @@ Item {
                     }
                 }
 
-                PlasmaCore.SvgItem {
+                KSvg.SvgItem {
                     anchors.centerIn: parent
                     width: arrow.width
                     height: arrow.height

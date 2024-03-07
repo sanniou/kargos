@@ -15,9 +15,10 @@
             "Plasma/Applet"
         ],
         "Version": "0.7.0",
-        "Website": "https://github.com/sanniou/kargos"
+        "Website": "https://github.com/saniou/kargos"
     },
-    "X-Plasma-API-Minimum-Version": "6.0",
+    "KPackageStructure": "Plasma/Applet",
     "X-KDE-ParentApp": "",
+    "X-Plasma-API-Minimum-Version": "6.0",
     "X-Plasma-RemoteLocation": ""
 }
