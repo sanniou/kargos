@@ -1,34 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <kcfg xmlns="http://www.kde.org/standards/kcfg/1.0"
-      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-      xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0
-      http://www.kde.org/standards/kcfg/1.0/kcfg.xsd" >
-  <kcfgfile name=""/>
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.kde.org/standards/kcfg/1.0 http://www.kde.org/standards/kcfg/1.0/kcfg.xsd">
+  <kcfgfile name="" />
 
   <group name="General">
-    <entry name="command" type="string">
+    <entry name="command" type="String">
       <default></default>
     </entry>
-    <entry name="interval" type="int">
+    <entry name="interval" type="Int">
       <default>1</default>
     </entry>
-    <entry name="rotation" type="int">
+    <entry name="rotation" type="Int">
       <default>5</default>
     </entry>
   </group>
   <group name="Appearance">
-    <entry name="compactLabelMaxWidth" type="int">
+    <entry name="compactLabelMaxWidth" type="Int">
       <default>0</default>
     </entry>
-    <entry name="width" type="int">
+    <entry name="width" type="Int">
       <default>600</default>
     </entry>
-    <entry name="height" type="int">
+    <entry name="height" type="Int">
       <default>600</default>
     </entry>
     <entry name="d_ArrowVisibleAsNeeded" type="Bool">
-        <default>true</default>
+      <default>true</default>
     </entry>
   </group>
 </kcfg>
-
