@@ -25,6 +25,8 @@ import org.kde.plasma.components as PlasmaComponents
 import org.kde.plasma.core as PlasmaCore
 
 MouseArea {
+    // avoid buttons to disappear on each update
+
     id: mousearea
 
     property bool hasClickAction: isClickable(item)
@@ -60,7 +62,6 @@ MouseArea {
 
         buttonsShouldHide = false;
         if (goButton.visible || runButton.visible)
-            // avoid buttons to disappear on each update
             timer.running = false;
 
     }
@@ -97,9 +98,9 @@ MouseArea {
         iconName: 'edit-link'
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
-        visible: item !== null && (buttonsAlwaysVisible || !buttonsShouldHide) && (typeof item.href !== 'undefined') && (typeof item.onclick === 'undefined' || item.onclick !== 'href')
+        visible: item !== null && item !== undefined && (buttonsAlwaysVisible || !buttonsShouldHide) && (typeof item.href !== 'undefined') && (typeof item.onclick === 'undefined' || item.onclick !== 'href')
         onClicked: {
-            if (item !== null && item.href !== undefined)
+            if (item !== null && item !== undefined && item.href !== undefined)
                 executable.exec('xdg-open ' + item.href);
 
             doRefreshIfNeeded(item);
@@ -115,17 +116,17 @@ MouseArea {
         anchors.right: goButton.visible ? goButton.left : parent.right
         anchors.rightMargin: goButton.visible ? (mousearea.iconMode ? 0 : 2) : 0
         anchors.verticalCenter: parent.verticalCenter
-        visible: item !== null && (buttonsAlwaysVisible || !buttonsShouldHide) && (typeof item.bash !== 'undefined') && (typeof item.onclick === 'undefined' || item.onclick !== 'bash')
+        visible: item !== null && item !== undefined && (buttonsAlwaysVisible || !buttonsShouldHide) && (typeof item.bash !== 'undefined') && (typeof item.onclick === 'undefined' || item.onclick !== 'bash')
         onClicked: {
-            if (item !== null && item.bash !== undefined) {
+            if (item !== null && item !== undefined && item.bash !== undefined) {
                 if (item.terminal !== undefined && item.terminal === 'true')
                     executable.exec('konsole --noclose -e ' + item.bash, function() {
-                        root.doRefreshIfNeeded(item);
-                    });
+                    root.doRefreshIfNeeded(item);
+                });
                 else
                     executable.exec(item.bash, function() {
-                        root.doRefreshIfNeeded(item);
-                    });
+                    root.doRefreshIfNeeded(item);
+                });
             }
         }
     }

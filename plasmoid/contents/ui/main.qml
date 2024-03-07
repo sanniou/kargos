@@ -43,10 +43,10 @@ PlasmoidItem {
     }
 
     function update() {
+        //console.log("log command" + command);
         if (command === '')
-            plasmoid.setConfigurationRequired(true, 'You need to provide a command');
-        else
-            plasmoid.setConfigurationRequired(false);
+            return ;
+
         commandResultsDS.exec(command);
         updateInterval();
     }
@@ -128,16 +128,16 @@ PlasmoidItem {
     }
 
     function doRefreshIfNeeded(item) {
-        if (item !== null && item.refresh == 'true')
+        if (item !== null && item !== undefined && item.refresh == 'true')
             root.update();
 
     }
 
     function doItemClick(item) {
-        if (item !== null && item.href !== undefined && item.onclick === 'href')
+        if (item !== null && item !== undefined && item.href !== undefined && item.onclick === 'href')
             executable.exec('xdg-open ' + item.href);
 
-        if (item !== null && item.bash !== undefined && item.onclick === 'bash')
+        if (item !== null && item !== undefined && item.bash !== undefined && item.onclick === 'bash')
             doExecute(item, item.bash);
         else
             doRefreshIfNeeded(item);
@@ -154,25 +154,25 @@ PlasmoidItem {
     function doExecute(item, bash) {
         if (item.terminal !== undefined && item.terminal === 'true')
             executable.exec('konsole --noclose -e ' + bash, function() {
-                doRefreshIfNeeded(item);
-            });
+            doRefreshIfNeeded(item);
+        });
         else
             executable.exec(bash, function() {
-                doRefreshIfNeeded(item);
-            });
+            doRefreshIfNeeded(item);
+        });
     }
 
     function isClickable(item) {
-        return item !== null && (item.refresh == 'true' || item.onclick == 'href' || item.onclick == 'bash');
+        return item !== null && item !== undefined && null && (item.refresh == 'true' || item.onclick == 'href' || item.onclick == 'bash');
     }
 
     function createImageFile(base64, callback) {
         var filename = imagesIndex[base64];
         if (filename === undefined)
             executable.exec('/bin/bash -c \'file=$(mktemp /tmp/kargos.image.XXXXXX); echo "' + base64 + '" | base64 -d > $file; echo -n $file\'', function(filename) {
-                imagesIndex[base64] = filename;
-                callback(filename);
-            });
+            imagesIndex[base64] = filename;
+            callback(filename);
+        });
         else
             callback(filename);
     }
@@ -204,6 +204,7 @@ PlasmoidItem {
         engine: "executable"
         connectedSources: []
         onNewData: {
+            //console.log("log commandResultsDS onNewData" + data);
             var stdout = data["stdout"];
             exited(sourceName, stdout);
             disconnectSource(sourceName); // cmd finished
@@ -230,6 +231,7 @@ PlasmoidItem {
         engine: "executable"
         connectedSources: []
         onNewData: {
+            //console.log("log executable onNewData" + data);
             var stdout = data["stdout"];
             if (callbacks[sourceName] !== undefined)
                 callbacks[sourceName](stdout);
@@ -240,17 +242,16 @@ PlasmoidItem {
     }
 
     Connections {
-        //}
-
         target: commandResultsDS
         onExited: {
+            //console.log("log commandResultsDS stdout" + stdout);
             dropdownItemsCount = parseItems(stdout).filter(function(item) {
                 return item.dropdown === undefined || item.dropdown !== 'false';
             }).length;
             if (stdout.indexOf('---') === -1)
                 plasmoid.expanded = false;
 
-            //if (config.waitForCompletion) {
+            //if (config.waitForCompletion)
             timer.restart();
         }
     }

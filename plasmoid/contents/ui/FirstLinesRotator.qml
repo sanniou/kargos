@@ -31,7 +31,7 @@ Row {
 
     property bool buttonHidingDelay: false
     property var rotatingItems: []
-    property var currentMessage: -11
+    property var currentMessage: -1
     property int labelMaxWidth: 0
     readonly property alias icon: icon
     readonly property alias image: image
@@ -39,6 +39,8 @@ Row {
     readonly property alias mousearea: mousearea
 
     function getCurrentItem() {
+        //console.log("log currentMessage" + currentMessage);
+        //console.log("log rotatingItems" + rotatingItems);
         return (rotatingItems.length > 0 && currentMessage != -1) ? rotatingItems[currentMessage] : null;
     }
 
@@ -106,7 +108,7 @@ Row {
 
         function update() {
             var item = getCurrentItem();
-            if (item !== null)
+            if (item !== null && item !== undefined)
                 source = (item.iconName !== undefined) ? item.iconName : null;
 
             if (source === null)
@@ -138,7 +140,7 @@ Row {
 
         function update() {
             var item = getCurrentItem();
-            if (item !== null) {
+            if (item !== null && item !== undefined) {
                 if (item.image !== undefined)
                     createImageFile(item.image, function(filename) {
                     image.source = filename;
@@ -198,7 +200,8 @@ Row {
 
             function update() {
                 var item = getCurrentItem();
-                if (item !== null) {
+                //console.log("log getCurrentItem" + item);
+                if (item !== null && item !== undefined) {
                     if (item["kargos.fa_icon"])
                         text = FontAwesome[item["kargos.fa_icon"]] + " " + item.title;
                     else
@@ -225,7 +228,7 @@ Row {
             text: 'starting1...'
             textFormat: Text.RichText
             anchors.verticalCenter: parent.verticalCenter
-            elide: (labelMaxWidth > 0) ? Text.ElideRight : Text.ElideNonde
+            elide: (labelMaxWidth > 0) ? Text.ElideRight : Text.ElideNone
             width: (labelMaxWidth > 0) ? labelMaxWidth : label.implicitWidth
             Component.onCompleted: {
                 defaultFontFamily = font.family;
