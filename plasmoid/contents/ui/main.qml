@@ -32,7 +32,7 @@ PlasmoidItem {
 
     property int interval
     property bool kargosMenuOpen: isConstrained() ? false : true
-    property string kargosVersion: "0.7.0"
+    property string kargosVersion: Plasmoid.metaData.version
     property int dropdownItemsCount: -1
     property var command: plasmoid.configuration.command
     property var imagesIndex: ({
@@ -198,6 +198,8 @@ PlasmoidItem {
         signal exited(string sourceName, string stdout)
 
         function exec(cmd) {
+            // console.log("kargosVersion = " + kargosVersion);
+            // console.log("kargosMenuOpen = " + kargosMenuOpen);
             connectSource(`export KARGOS_MENU_OPEN=${kargosMenuOpen}; export KARGOS_VERSION=${kargosVersion}; ${cmd}`);
         }
 
