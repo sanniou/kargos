@@ -56,10 +56,9 @@ Item {
             delete fullRoot.categories[key];
         }
         var kargosObject = parseItems(stdout);
-        var items = kargosObject.bodyItems;
-        items.forEach(function(item) {
-            mainlog("log update full item :" + JSON.stringify(item));
-            if (item.dropdown === undefined || item.dropdown === 'true') {
+        var bodyItems = kargosObject.bodyItems;
+        bodyItems.forEach(function(item) {
+            if (item.dropdown === undefined || item.dropdown === true) {
                 if (item.category !== undefined) {
                     if (fullRoot.categories[item.category] === undefined)
                         fullRoot.categories[item.category] = {
@@ -72,11 +71,13 @@ Item {
                 }
             }
         });
-        items.forEach(function(item) {
+        mainlog("log fullRoot.categories :" + JSON.stringify(fullRoot.categories));
+        bodyItems.forEach(function(item) {
             if (item.dropdown === undefined || item.dropdown === true)
                 kargosModel.append(item);
 
         });
+        mainlog("log kargosModel :" + JSON.stringify(kargosModel));
     }
 
     Layout.preferredWidth: plasmoid.configuration.width
@@ -107,14 +108,14 @@ Item {
         delegate: Row {
             id: row
 
-            height: ((category === undefined || fullRoot.categories[category] === undefined) || (fullRoot.categories[category].visible)) ? row.visibleHeight : 0
-            visible: (category === undefined || fullRoot.categories[category] === undefined) ? true : (fullRoot.categories[category].visible)
+            height: ((model.category === undefined || fullRoot.categories[model.category] === undefined) || (fullRoot.categories[model.category].visible)) ? row.visibleHeight : 0
+            visible: (model.category === undefined || fullRoot.categories[model.category] === undefined) ? true : (fullRoot.categories[model.category].visible)
             spacing: 2
             Component.onCompleted: {
-                if (category !== undefined && fullRoot.categories[category] !== undefined) {
-                    mainlog("log list category = " + category);
-                    mainlog("log list category size = " + fullRoot.categories[category].items.length);
-                    fullRoot.categories[category].rows.push(row);
+                if (model.category !== undefined && fullRoot.categories[model.category] !== undefined) {
+                    mainlog("log list category = " + model.category);
+                    mainlog("log list category size = " + fullRoot.categories[model.category].items.length);
+                    fullRoot.categories[model.category].rows.push(row);
                 }
                 if (model.image !== undefined)
                     createImageFile(model.image, function(filename) {
@@ -203,8 +204,12 @@ Item {
             Kirigami.Icon {
                 id: arrow_icon
 
-                source: (fullRoot.categories[model.title] !== undefined && fullRoot.categories[model.title].visible) ? 'arrow-down' : 'arrow-up'
-                visible: (model.category === undefined && fullRoot.categories[model.title] !== undefined && fullRoot.categories[model.title].items.length > 0) ? true : false
+                function checkdd(model) {
+                    return ((model.category === undefined || model.category === "") && fullRoot.categories[model.title] !== undefined && fullRoot.categories[model.title].items.length > 0) ? true : false;
+                }
+
+                source: (fullRoot.categories[model.title] !== undefined && fullRoot.categories[model.title].visible) ? 'arrow-down' : 'arrow-left'
+                visible: checkdd(model)
                 width: (visible) ? Kirigami.Units.iconSizes.smallMedium : 0
                 height: Kirigami.Units.iconSizes.smallMedium
 

@@ -28,7 +28,7 @@ import org.kde.plasma.components as PlasmaComponents
 import org.kde.plasma.core as PlasmaCore
 import org.kde.plasma.plasmoid
 
-PlasmoidItem {
+Item {
     id: compactRoot
 
     //https://github.com/psifidotos/Latte-Dock/blob/891d6e4dfa59758f09dd4a61fb1ffcc888fd03f0/containment/package/contents/ui/main.qml#L747
@@ -47,11 +47,14 @@ PlasmoidItem {
         id: mousearea
 
         function doDropdown() {
+            mainlog("root.expanded = " + root.expanded);
+            mainlog("Plasmoid.configuration : " + JSON.stringify(Plasmoid.configuration));
+            mainlog("Plasmoid.immutable && Plasmoid.userConfiguring : " + Plasmoid.immutable + "  && " + Plasmoid.userConfiguring);
             if (!root.expanded) {
                 root.expanded = true;
                 root.kargosMenuOpen = true;
                 mouseExitDelayer.stop();
-            } else if (Plasmoid.expanded) {
+            } else if (root.expanded) {
                 root.expanded = false;
                 root.kargosMenuOpen = false;
             }
@@ -104,7 +107,7 @@ PlasmoidItem {
             height: Kirigami.Units.iconSizes.smallMedium
             implicitWidth: Kirigami.Units.iconSizes.smallMedium
             implicitHeight: Kirigami.Units.iconSizes.smallMedium
-            visible: (root.dropdownItemsCount > 0) && (!Plasmoid.configuration.d_ArrowNeverVisible) && (mouseIsInside || Plasmoid.expanded || Plasmoid.configuration.d_ArrowAlwaysVisible)
+            visible: (root.dropdownItemsCount > 0) && (!Plasmoid.configuration.d_ArrowNeverVisible) && (mouseIsInside || root.expanded || Plasmoid.configuration.d_ArrowAlwaysVisible)
 
             anchors {
                 right: parent.right

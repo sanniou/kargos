@@ -28,7 +28,6 @@ import org.kde.plasma.plasma5support as Plasma5Support
 import org.kde.plasma.plasmoid
 
 PlasmoidItem {
-    // console.log(output);
 
     id: root
 
@@ -41,8 +40,8 @@ PlasmoidItem {
     })
 
     function isConstrained() {
-        // return (plasmoid.formFactor == PlasmaCore.Types.Vertical || plasmoid.formFactor == PlasmaCore.Types.Horizontal);
-        return true;
+        return (plasmoid.formFactor == PlasmaCore.Types.Vertical || plasmoid.formFactor == PlasmaCore.Types.Horizontal);
+        // return true;
     }
 
     function update() {
@@ -150,7 +149,7 @@ PlasmoidItem {
                 });
             }
         }
-        // mainlog("kargosObject: " + kargosObject);
+        mainlog("log kargosObject: " + JSON.stringify(kargosObject));
         return kargosObject;
     }
 
@@ -205,8 +204,11 @@ PlasmoidItem {
     }
 
     function mainlog(output) {
+        // console.log(output);
     }
 
+    // toolTipMainText is a direct property of root, title is a property of Plasmoid attached property
+    toolTipMainText: i18n("This is %1", Plasmoid.title)
     onExternalData: (mimetype, data) => {
         mainlog("Got externalData: " + data);
         if (!command)
@@ -287,7 +289,7 @@ PlasmoidItem {
             }).length;
             mainlog("log dropdownItemsCount = " + dropdownItemsCount);
             if (stdout.indexOf('---') === -1)
-                plasmoid.expanded = false;
+                Plasmoid.expanded = false;
 
             //if (config.waitForCompletion)
             timer.restart();

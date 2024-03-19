@@ -71,7 +71,7 @@ Row {
         else if (currentMessage === -1)
             currentMessage = 0;
         rotatingItems = newItems;
-        mainlog("log rotatingItems = " + rotatingItems);
+        mainlog("log rotatingItems = " + JSON.stringify(rotatingItems));
         if (root.command == '')
             label.text = 'No command configured. Go to settings...';
         else
