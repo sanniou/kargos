@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "Root"
-echo "Toooooor"
+# echo "Toooooor"
 echo "---"
 echo "Graphics"
 echo "-- Gimp"

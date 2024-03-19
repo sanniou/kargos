@@ -28,6 +28,8 @@ import org.kde.plasma.plasma5support as Plasma5Support
 import org.kde.plasma.plasmoid
 
 PlasmoidItem {
+    // console.log(output);
+
     id: root
 
     property int interval
@@ -39,11 +41,12 @@ PlasmoidItem {
     })
 
     function isConstrained() {
-        return (plasmoid.formFactor == PlasmaCore.Types.Vertical || plasmoid.formFactor == PlasmaCore.Types.Horizontal);
+        // return (plasmoid.formFactor == PlasmaCore.Types.Vertical || plasmoid.formFactor == PlasmaCore.Types.Horizontal);
+        return true;
     }
 
     function update() {
-        //console.log("log command" + command);
+        mainlog("log command" + command);
         if (command === '')
             return ;
 
@@ -89,6 +92,7 @@ PlasmoidItem {
             // replace \' to string __ESCAPED_QUOTE__
             attributesToken = attributesToken.replace(/\\'/g, '__ESCAPED_QUOTE__');
             var tokens = attributesToken.match(/([^\s']+=[^\s']+|[^\s']+='[^']*')+/g);
+            mainlog("log parsedItem attributesToken : " + tokens);
             tokens.forEach(function(attribute_value) {
                 if (attribute_value.indexOf('=') != -1)
                     parsedObject[attribute_value.split('=')[0]] = attribute_value.substring(attribute_value.indexOf('=') + 1).replace(/'/g, '').replace(/__ESCAPED_QUOTE__/g, "'");
@@ -106,25 +110,48 @@ PlasmoidItem {
     }
 
     function parseItems(stdout) {
-        var items = [];
+        var kargosObject = {
+            "titleItem": [],
+            "bodyItems": [],
+            "tooltipmaintitle": ""
+        };
         var currentCategory = null;
         var menuGroupsStrings = stdout.split("---");
-        var totalItems = 0;
-        if (menuGroupsStrings.length > 1) {
-            for (var i = 1; i < menuGroupsStrings.length; i++) {
+        // mainlog("menuGroupsStrings: " + menuGroupsStrings);
+        // mainlog("menuGroupsStrings.length: " + menuGroupsStrings.length);
+        if (menuGroupsStrings.length > 0) {
+            for (var i = 0; i < menuGroupsStrings.length; i++) {
+                var items;
+                if (i == 0)
+                    items = kargosObject.titleItem;
+                else
+                    items = kargosObject.bodyItems;
                 var groupString = menuGroupsStrings[i];
                 var groupTokens = groupString.trim().split('\n');
                 groupTokens.forEach(function(groupToken) {
+                    // mainlog("parsedItem.groupToken = " + groupToken);
                     var parsedItem = root.parseLine(groupToken, currentCategory);
+                    if (parsedItem.tooltipmain !== undefined && parsedItem.tooltipmain === 'true') {
+                        // mainlog("parsedItem.tooltipmain = " + parsedItem.tooltipmain);
+                        kargosObject.tooltipmain = parsedItem;
+                        kargosObject.tooltipmaintitle = parsedItem.title;
+                        return ;
+                    }
+                    if (parsedItem.tooltipsub !== undefined && parsedItem.tooltipsub === 'true') {
+                        // mainlog("parsedItem.tooltipsub = " + parsedItem.tooltipsub);
+                        kargosObject.tooltipsub = parsedItem;
+                        return ;
+                    }
                     if (parsedItem.category === undefined)
                         currentCategory = parsedItem.title;
 
+                    // mainlog("parsedItem.items push ");
                     items.push(parsedItem);
-                    totalItems++;
                 });
             }
         }
-        return items;
+        // mainlog("kargosObject: " + kargosObject);
+        return kargosObject;
     }
 
     function doRefreshIfNeeded(item) {
@@ -177,6 +204,15 @@ PlasmoidItem {
             callback(filename);
     }
 
+    function mainlog(output) {
+    }
+
+    onExternalData: (mimetype, data) => {
+        mainlog("Got externalData: " + data);
+        if (!command)
+            command = data;
+
+    }
     // status bar only show icon, no words if constrained
     preferredRepresentation: isConstrained() ? compactRepresentation : fullRepresentation
     onCommandChanged: {
@@ -198,15 +234,15 @@ PlasmoidItem {
         signal exited(string sourceName, string stdout)
 
         function exec(cmd) {
-            // console.log("kargosVersion = " + kargosVersion);
-            // console.log("kargosMenuOpen = " + kargosMenuOpen);
+            // mainlog("kargosVersion = " + kargosVersion);
+            // mainlog("kargosMenuOpen = " + kargosMenuOpen);
             connectSource(`export KARGOS_MENU_OPEN=${kargosMenuOpen}; export KARGOS_VERSION=${kargosVersion}; ${cmd}`);
         }
 
         engine: "executable"
         connectedSources: []
         onNewData: {
-            //console.log("log commandResultsDS onNewData" + data);
+            mainlog("log commandResultsDS onNewData" + data);
             var stdout = data["stdout"];
             exited(sourceName, stdout);
             disconnectSource(sourceName); // cmd finished
@@ -233,7 +269,7 @@ PlasmoidItem {
         engine: "executable"
         connectedSources: []
         onNewData: {
-            //console.log("log executable onNewData" + data);
+            mainlog("log executable onNewData" + data);
             var stdout = data["stdout"];
             if (callbacks[sourceName] !== undefined)
                 callbacks[sourceName](stdout);
@@ -244,33 +280,20 @@ PlasmoidItem {
     }
 
     Connections {
-        target: commandResultsDS
-        onExited: {
-            //console.log("log commandResultsDS stdout" + stdout);
-            dropdownItemsCount = parseItems(stdout).filter(function(item) {
+        function onExited(sourceName, stdout) {
+            mainlog("log commandResultsDS stdout \n" + stdout);
+            dropdownItemsCount = parseItems(stdout).bodyItems.filter(function(item) {
                 return item.dropdown === undefined || item.dropdown !== 'false';
             }).length;
+            mainlog("log dropdownItemsCount = " + dropdownItemsCount);
             if (stdout.indexOf('---') === -1)
                 plasmoid.expanded = false;
 
             //if (config.waitForCompletion)
             timer.restart();
         }
-    }
 
-    Connections {
-        target: plasmoid
-        // `externalData` is emitted when the containment decides to send data to a plasmoid.
-        // More usefully (for us at least), plasmoidviewer also sends its first argument this way.
-        // So, for development we can do:
-        // $ plasmoidviewer -a ./plasmoid "echo hello world"
-        // and this will set the command as "echo hello world".
-        onExternalData: function(mimeType, data) {
-            console.debug("Got externalData: " + data);
-            if (!command)
-                command = data;
-
-        }
+        target: commandResultsDS
     }
 
     Timer {

@@ -25,11 +25,13 @@ import QtQuick.Layouts
 import org.kde.kirigami as Kirigami
 import org.kde.plasma.components as PlasmaComponents
 import org.kde.plasma.core as PlasmaCore
+import org.kde.plasma.plasmoid
 
 Row {
     id: control
 
     property bool buttonHidingDelay: false
+    property var kargosObject
     property var rotatingItems: []
     property var currentMessage: -1
     property int labelMaxWidth: 0
@@ -39,8 +41,8 @@ Row {
     readonly property alias mousearea: mousearea
 
     function getCurrentItem() {
-        //console.log("log currentMessage" + currentMessage);
-        //console.log("log rotatingItems" + rotatingItems);
+        mainlog("log currentMessage" + currentMessage);
+        mainlog("log rotatingItems" + JSON.stringify(rotatingItems));
         return (rotatingItems.length > 0 && currentMessage != -1) ? rotatingItems[currentMessage] : null;
     }
 
@@ -52,21 +54,15 @@ Row {
     }
 
     function update(stdout) {
-        var beforeSeparator = true;
         var newItems = [];
-        stdout.split('\n').forEach(function(line) {
-            if (line.trim().length === 0)
-                return ;
+        kargosObject = parseItems(stdout);
+        kargosObject.titleItem.forEach(function(parsedItem) {
+            newItems.push(parsedItem);
+        });
+        kargosObject.bodyItems.forEach(function(parsedItem) {
+            if (parsedItem.dropdown !== undefined && parsedItem.dropdown === 'false')
+                newItems.push(parsedItem);
 
-            if (line.trim() === '---') {
-                beforeSeparator = false;
-                return ;
-            }
-            var parsedItem = root.parseLine(line);
-            if (beforeSeparator)
-                newItems.push(parsedItem);
-            else if (parsedItem.dropdown !== undefined && parsedItem.dropdown === 'false')
-                newItems.push(parsedItem);
         });
         if (newItems.length == 0)
             currentMessage = -1;
@@ -75,6 +71,7 @@ Row {
         else if (currentMessage === -1)
             currentMessage = 0;
         rotatingItems = newItems;
+        mainlog("log rotatingItems = " + rotatingItems);
         if (root.command == '')
             label.text = 'No command configured. Go to settings...';
         else
@@ -191,16 +188,17 @@ Row {
         implicitHeight: label.implicitHeight
         anchors.verticalCenter: parent.verticalCenter
 
-        PlasmaComponents.Label {
+        Text {
             id: label
 
+            property var item
             property var defaultFontFamily
             property var defaultFontSize
             property var defaultColor
 
             function update() {
-                var item = getCurrentItem();
-                //console.log("log getCurrentItem" + item);
+                item = getCurrentItem();
+                mainlog("log getCurrentItem" + JSON.stringify(item));
                 if (item !== null && item !== undefined) {
                     if (item["kargos.fa_icon"])
                         text = FontAwesome[item["kargos.fa_icon"]] + " " + item.title;
@@ -225,7 +223,7 @@ Row {
                 var _correctedMaxWidth = label.implicitWidth;
             }
 
-            text: 'starting1...'
+            text: 'starting...'
             textFormat: Text.RichText
             anchors.verticalCenter: parent.verticalCenter
             elide: (labelMaxWidth > 0) ? Text.ElideRight : Text.ElideNone
@@ -235,10 +233,17 @@ Row {
                 defaultFontSize = font.pointSize;
                 defaultColor = color + ''; //append '' to avoid binding to color property, we want just to intialize it.
                 update();
-                if (plasmoid.configuration.rotation > 0)
+                if (Plasmoid.configuration.rotation > 0)
                     rotationTimer.running = true;
 
             }
+
+            PlasmaCore.ToolTipArea {
+                anchors.fill: parent
+                mainText: (control.kargosObject) ? control.kargosObject.tooltipmaintitle : ""
+                enabled: (control.kargosObject) ? control.kargosObject.tooltipmaintitle : false
+            }
+
         }
 
         ItemTextMouseArea {
@@ -249,12 +254,11 @@ Row {
                 rotationTimer.running = false;
             }
             onExited: {
-                if (plasmoid.configuration.rotation > 0)
+                if (Plasmoid.configuration.rotation > 0)
                     rotationTimer.running = true;
 
             }
             onWheel: {
-                var item = getCurrentItem();
                 if (wheel.angleDelta.y < 0) {
                     if (item.wheelDown !== undefined)
                         root.doItemWheelDown(item);
@@ -272,16 +276,17 @@ Row {
     }
 
     Connections {
-        target: commandResultsDS
-        onExited: {
+        function onExited(sourceName, stdout) {
             control.update(stdout);
         }
+
+        target: commandResultsDS
     }
 
     Timer {
         id: rotationTimer
 
-        interval: plasmoid.configuration.rotation * 1000
+        interval: Plasmoid.configuration.rotation * 1000
         running: false
         repeat: true
         onTriggered: {

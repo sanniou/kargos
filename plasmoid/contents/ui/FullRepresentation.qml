@@ -51,20 +51,24 @@ Item {
 
     function update(stdout) {
         kargosModel.clear();
-        var items = parseItems(stdout);
+        // fullRoot.categories.clear();
+        for (var key in fullRoot.categories) {
+            delete fullRoot.categories[key];
+        }
+        var kargosObject = parseItems(stdout);
+        var items = kargosObject.bodyItems;
         items.forEach(function(item) {
+            mainlog("log update full item :" + JSON.stringify(item));
             if (item.dropdown === undefined || item.dropdown === 'true') {
                 if (item.category !== undefined) {
                     if (fullRoot.categories[item.category] === undefined)
                         fullRoot.categories[item.category] = {
-                            "visible": false,
-                            "items": [],
-                            "rows": []
-                        };
+                        "visible": false,
+                        "items": [],
+                        "rows": []
+                    };
 
-                    if (item.category !== undefined)
-                        fullRoot.categories[item.category].items.push(item);
-
+                    fullRoot.categories[item.category].items.push(item);
                 }
             }
         });
@@ -103,28 +107,30 @@ Item {
         delegate: Row {
             id: row
 
-            height: (typeof category === 'undefined' || (fullRoot.categories[category].visible)) ? row.visibleHeight : 0
-            visible: (typeof category === 'undefined') ? true : (fullRoot.categories[category].visible)
+            height: ((category === undefined || fullRoot.categories[category] === undefined) || (fullRoot.categories[category].visible)) ? row.visibleHeight : 0
+            visible: (category === undefined || fullRoot.categories[category] === undefined) ? true : (fullRoot.categories[category].visible)
             spacing: 2
             Component.onCompleted: {
-                if (typeof category !== 'undefined')
+                if (category !== undefined && fullRoot.categories[category] !== undefined) {
+                    mainlog("log list category = " + category);
+                    mainlog("log list category size = " + fullRoot.categories[category].items.length);
                     fullRoot.categories[category].rows.push(row);
-
-                if (typeof model.image !== 'undefined')
+                }
+                if (model.image !== undefined)
                     createImageFile(model.image, function(filename) {
-                        image.source = filename;
-                    });
+                    image.source = filename;
+                });
 
-                if (typeof model.imageURL !== 'undefined')
+                if (model.imageURL !== undefined)
                     image.source = model.imageURL;
 
-                if (typeof model.imageWidth !== 'undefined')
+                if (model.imageWidth !== undefined)
                     image.sourceSize.width = model.imageWidth;
 
-                if (typeof model.imageHeight !== 'undefined')
+                if (model.imageHeight !== undefined)
                     image.sourceSize.height = model.imageHeight;
 
-                if (typeof model.image !== 'undefined' && typeof model.imageURL !== 'undefined')
+                if (model.image !== undefined && model.imageURL !== undefined)
                     image.width = 0;
 
             }
@@ -132,10 +138,10 @@ Item {
             Kirigami.Icon {
                 id: icon
 
-                source: (typeof iconName !== 'undefined') ? iconName : ''
+                source: (model.iconName !== undefined) ? model.iconName : ''
                 anchors.verticalCenter: row.verticalCenter
                 Component.onCompleted: {
-                    if (typeof iconName === 'undefined')
+                    if (model.iconName === undefined)
                         icon.width = 0;
 
                 }
@@ -173,13 +179,13 @@ Item {
                     wrapMode: Text.WordWrap
                     // elide: Text.ElideRight
                     Component.onCompleted: {
-                        if (typeof model.font !== 'undefined')
+                        if (model.font !== undefined)
                             font.family = model.font;
 
-                        if (typeof model.size !== 'undefined')
+                        if (model.size !== undefined)
                             font.pointSize = model.size;
 
-                        if (typeof model.color !== 'undefined')
+                        if (model.color !== undefined)
                             color = model.color;
 
                     }
@@ -198,9 +204,9 @@ Item {
                 id: arrow_icon
 
                 source: (fullRoot.categories[model.title] !== undefined && fullRoot.categories[model.title].visible) ? 'arrow-down' : 'arrow-up'
-                visible: (typeof model.category === 'undefined' && fullRoot.categories[model.title] !== undefined && fullRoot.categories[model.title].items.length > 0) ? true : false
-                width: (visible) ? units.iconSizes.smallMedium : 0
-                height: units.iconSizes.smallMedium
+                visible: (model.category === undefined && fullRoot.categories[model.title] !== undefined && fullRoot.categories[model.title].items.length > 0) ? true : false
+                width: (visible) ? Kirigami.Units.iconSizes.smallMedium : 0
+                height: Kirigami.Units.iconSizes.smallMedium
 
                 MouseArea {
                     cursorShape: Qt.PointingHandCursor
@@ -229,10 +235,11 @@ Item {
     }
 
     Connections {
-        target: commandResultsDS
-        onExited: {
+        function onExited(sourceName, stdout) {
             update(stdout);
         }
+
+        target: commandResultsDS
     }
 
 }
